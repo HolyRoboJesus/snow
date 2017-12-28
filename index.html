@@ -1,0 +1,239 @@
+<html>
+<head>
+	<title>Merry Christmas!</title>
+	<script type = "text/javascript" src = "objects/tree.js"></script>
+	<script type = "text/javascript" src = "objects/snowflake.js"></script>
+	<script type = "text/javascript" src = "objects/farSnowman.js"></script>
+	<script type = "text/javascript" src = "objects/house.js"></script>
+</head>
+<body>
+
+	<canvas
+	style="border:1px solid #000040;"
+	id = "mycanvas"
+	width = "500"
+	height = "500">
+
+	Your browser does not support canvas
+</canvas>
+
+<script>
+window.addEventListener("load", myApp, false);
+
+function myApp() {
+	var canvas;
+	var context;
+
+	function getCanvas() {
+		var tmp;
+
+		tmp = document.getElementById ("mycanvas");
+
+		if (tmp == null) {
+			alert ("no canvas");
+		}
+
+		return tmp;
+
+	}
+
+	function animateMe() {
+		context.clearRect (0, 0, canvas.width, canvas.height);
+
+		context.fillStyle = "#000040";
+		context.fillRect(0, canvas.height - 50, canvas.width, 50);
+		
+		horizon = canvas.height - 50;
+		
+		//Drawing scenery
+		
+		sceneDraw();
+		
+		function sceneDraw() {
+		
+			context.fillRect(0, horizon, canvas.width, 50);
+			
+			img = new Image();
+			img.src = "img/scene/hills.png";
+	
+			context.drawImage (img, 0, horizon - 250, 500, 250);
+			
+		}
+
+		//Drawing Trees
+
+		treeDraw();
+
+		function treeDraw() {
+
+			var count;
+
+			//Background
+
+			for (count = 0; count < 8; count++) {
+
+				backTree = backTrees[count];
+
+				backTree.draw(context);
+
+			}
+
+			//Foreground
+
+			for (count = 0; count < 4; count++) {
+
+				foreTree = foreTrees[count];
+
+				foreTree.draw(context);
+
+			}
+
+		}
+		
+		//Drawing house
+		
+		houseDraw();
+		
+		function houseDraw() {
+			
+			house.draw(context);
+			
+		}
+		
+		//Drawing Snowflakes
+
+		snowflakeDraw();
+
+		function snowflakeDraw() {
+
+			var count;
+
+			for (count = 0; count < 9; count++) {
+
+				flake = flakes[count];
+
+				flake.draw(context);
+				flake.action(canvas);
+
+			}
+
+		}
+
+		requestAnimationFrame (animateMe);
+	}
+
+	canvas = getCanvas();
+	context = canvas.getContext ("2d");
+
+	init();
+
+	function init() {
+	
+		var horizon = canvas.height - 50;
+
+		//Trees
+
+		trees();
+
+		function trees() {
+
+			foreTrees = new Array();
+			backTrees = new Array();
+			var count;
+
+			//Foreground
+
+			for (count = 0; count < 4; count++) {
+
+				foreTree = new Tree("img/tree/fore.png",
+				Math.random() * canvas.width, horizon,
+				0.5 + Math.random() / 2);
+
+				foreTrees[count] = foreTree;
+
+			}
+
+			//Background
+
+			for (count = 0; count < 8; count++) {
+
+				backTree = new Tree("img/tree/back.png",
+				Math.random() * canvas.width, horizon,
+				0.25 + Math.random() / 4);
+
+				backTrees[count] = backTree;
+			}
+
+		}
+		
+		//Houses
+		
+		houses();
+		
+		function houses() {
+		
+			house = new House("img/house/closed.png", 250, horizon)
+			
+		}
+		
+		//Snowflakes
+
+		snowflakes();
+
+		function snowflakes() {
+
+			flakes = new Array();
+			rad = new Array();
+			var count;
+
+			//Radius
+
+			rad[0] = 3;
+
+			for (count = 1; count < 10; count++) {
+
+				rad[count] = rad[count - 1] + 0.5;
+
+			}
+
+			for (count = 0; count < 10; count++) {
+
+				//Velocity
+
+				vey = 0.3 * rad[count];
+
+				//Acceleration
+
+				if (rad[count] < 5) {accel = 3}
+				else {accel = 2}
+
+				bin = Math.floor(Math.random()* 2);
+
+				if (bin == 0) {accel = accel * 0.01}
+				else {accel = accel * -0.01}
+
+				//Definition
+
+				flake = new Snowflake(
+					Math.random() * 350 + 75,
+					Math.random() * canvas.height,
+					rad[count],
+					Math.random() * 4 - 2,
+					vey, accel);
+
+				flakes[count] = flake;
+
+			}
+
+		}
+
+		animateMe();
+	}
+
+}
+
+</script>
+
+</body>
+
+</html>
